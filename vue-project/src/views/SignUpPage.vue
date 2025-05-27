@@ -146,7 +146,7 @@ async function checkId() {
     return;
   }
   try {
-    const response = await $api.get('/auth/check-username/', { params: { username: userId.value } }); // '/accounts/' -> '/auth/'로 변경
+    const response = await $api.get('/accounts/check-username/', { params: { username: userId.value } }); // '/auth/' -> '/accounts/'로 변경
     idAvailable.value = response.data.available;
     if (response.data.available) {
       idCheckMessage.value = '✔ 입력하신 아이디를 사용할 수 있습니다.';
@@ -168,7 +168,7 @@ async function checkNickname() {
     return;
   }
   try {
-    const response = await $api.get('/auth/check-nickname/', { params: { nickname: nickname.value } }); // '/accounts/' -> '/auth/'로 변경
+    const response = await $api.get('/accounts/check-nickname/', { params: { nickname: nickname.value } }); // '/auth/' -> '/accounts/'로 변경
     nickAvailable.value = response.data.available;
     if (response.data.available) {
       nickCheckMessage.value = '✔ 사용 가능한 닉네임입니다.';
@@ -197,7 +197,7 @@ async function checkEmail() {
     return;
   }
   try {
-    const response = await $api.get('/auth/check-email/', { params: { email: email.value } }); // '/accounts/' -> '/auth/'로 변경
+    const response = await $api.get('/accounts/check-email/', { params: { email: email.value } }); // '/auth/' -> '/accounts/'로 변경
     emailAvailable.value = response.data.available;
     if (response.data.available) {
       emailCheckMessage.value = '✔ 사용 가능한 이메일입니다.';
@@ -274,7 +274,7 @@ async function handleSubmit() {
   };
 
   try {
-    const response = await $api.post('/auth/signup/', payload); // '/accounts/' -> '/auth/'로 변경
+    const response = await $api.post('/accounts/signup/', payload); // '/auth/' -> '/accounts/'로 변경
     console.log('회원가입 성공:', response.data);
 
     if (response.data && response.data.key) {

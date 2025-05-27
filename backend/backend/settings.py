@@ -216,3 +216,6 @@ from decouple import config
 
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 UPSTAGE_API_KEY = config("UPSTAGE_API_KEY")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

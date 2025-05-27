@@ -193,6 +193,17 @@
         </div>
       </div>
 
+      <!-- AI 이미지 생성 로딩 모달 -->
+      <div v-if="showAiLoadingModal" class="modal-overlay ai-loading-modal">
+        <div class="modal-content">
+          <h3>AI 이미지 생성 중</h3>
+          <p>작성하신 감상평에 맞는 이미지를 생성 중입니다...</p>
+          <div class="loading-spinner-container">
+            <div class="loading-spinner"></div>
+          </div>
+        </div>
+      </div>
+
       </div> <!-- main-content -->
       <div class="sidebar">
         <!-- ... (기존 사이드바 HTML 동일) ... -->
@@ -284,8 +295,15 @@
   const newReviewTitle = ref('');
   const newReviewContent = ref('');
 
+  const isCreatingThread = ref(false); // 감상평(Thread) 생성 및 AI 이미지 생성 진행 상태
+  const showAiLoadingModal = ref(false); // AI 이미지 생성 로딩 모달 표시 여부
+
   function openReviewModal() { showReviewModal.value = true; }
-  function closeReviewModal() { showReviewModal.value = false; newReviewTitle.value = ''; newReviewContent.value = ''; }
+  function closeReviewModal() {
+    showReviewModal.value = false;
+    newReviewTitle.value = '';
+    newReviewContent.value = '';
+  }
 
   async function submitReview() {
     if (!newReviewTitle.value.trim() || !newReviewContent.value.trim()) {
@@ -294,18 +312,45 @@
     if (!bookId.value) {
         alert('오류: 책 ID를 찾을 수 없습니다.'); return;
     }
-    console.log('Submitting review for book ID:', bookId.value); // ID 값 확인 로그
+
+    // API로 전송할 데이터를 먼저 지역 변수에 저장
+    const reviewData = {
+      title: newReviewTitle.value,
+      content: newReviewContent.value,
+    };
+
+    closeReviewModal(); // 이제 작성 모달을 닫아도 reviewData는 안전합니다.
+    isCreatingThread.value = true;
+    showAiLoadingModal.value = true;
+
     try {
-      const response = await $api.post(`/books/${bookId.value}/thread/create/`, {
-        title: newReviewTitle.value,
-        content: newReviewContent.value,
+      // 저장된 reviewData를 사용
+      const response = await $api.post(`/books/${bookId.value}/thread/create/`, reviewData);
+
+      // AI 이미지 생성이 백엔드에서 동기적으로 완료된다고 가정
+      // 응답에서 새로 생성된 감상평(thread)의 ID를 가져옵니다.
+      const newThreadId = response.data.id;
+
+      // AI 로딩 모달 닫기 전에 잠시 대기 (선택 사항, 사용자 경험을 위해)
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+
+      showAiLoadingModal.value = false;
+      alert('감상평이 등록되었고, AI 이미지가 생성되었습니다.'); // 또는 이미지 생성 완료 메시지
+
+      // 상세 페이지로 이동
+      router.push({
+        name: 'ReviewDetail',
+        params: { bookId: bookId.value, reviewId: newThreadId }
       });
-      await fetchBookReviews();
-      alert('감상평이 등록되었습니다.');
-      closeReviewModal();
+
+      // 현재 페이지의 감상평 목록도 새로고침 (선택 사항)
+      // await fetchBookReviews();
+      // 상세 페이지로 이동하므로, 현재 페이지 새로고침은 필수는 아닐 수 있음
+
     } catch (error) {
-      console.error('감상평 등록 실패:', error.response?.data || error.message);
-      let errorMessage = '감상평 등록에 실패했습니다.';
+      showAiLoadingModal.value = false;
+      console.error('감상평 등록 또는 AI 이미지 생성 실패:', error.response?.data || error.message);
+      let errorMessage = '감상평 등록 중 오류가 발생했습니다.';
       if (error.response && error.response.data) {
         const errors = error.response.data;
         if (typeof errors === 'object' && errors !== null) {
@@ -552,4 +597,30 @@ section h2 { font-size: 1.4rem; font-weight: bold; color: #333; margin: 0; }
 .pagination { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2rem; }
 .page-btn { background-color: transparent; border: 1px solid #ddd; color: #555; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s, color 0.2s; }
 .page-btn:hover, .page-btn.active { background-color: #555; color: #fff; border-color: #555; }
+
+/* AI 로딩 모달 스타일 */
+.ai-loading-modal .modal-content {
+  text-align: center;
+}
+
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.loading-spinner {
+  border: 5px solid #f3f3f3; /* Light grey */
+  border-top: 5px solid #555; /* Darker grey for spinner */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>

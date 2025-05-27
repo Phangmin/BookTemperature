@@ -361,7 +361,7 @@ const popularEndings = [
 }
 .hero-text {
   order: 2; /* 텍스트 나중에 나오도록 */
-  flex-basis: 55%; /* 텍스트 영역 너비 조정 */
+  flex-basis: 60%; /* 텍스트 영역 너비 조정 */
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* 텍스트 왼쪽 정렬 */

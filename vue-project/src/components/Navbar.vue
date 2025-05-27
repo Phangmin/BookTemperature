@@ -10,8 +10,6 @@
       <nav class="nav-links">
         <router-link to="/recommend" :class="{'text-white': !showSolidNavbar, 'text-black': showSolidNavbar}">도서 추천</router-link>
         <router-link to="/theme/1" :class="{'text-white': !showSolidNavbar, 'text-black': showSolidNavbar}">테마별 도서</router-link>
-        <router-link to="/reviews" :class="{'text-white': !showSolidNavbar, 'text-black': showSolidNavbar}">모두의 감상평</router-link>
-        <router-link to="/endings" :class="{'text-white': !showSolidNavbar, 'text-black': showSolidNavbar}">열린 결말</router-link>
       </nav>
       <div class="auth-links">
         <template v-if="!isLoggedIn">
@@ -171,6 +169,7 @@ onMounted(() => {
 
 .nav-links {
   display: flex;
+  justify-content: flex-end;
   gap: 1.5rem; /* 링크 간 간격 */
 }
 .nav-links a {

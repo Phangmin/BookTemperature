@@ -42,11 +42,12 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'content', 'thread', 'user', 'created_at', 'like_count']
-        read_only_fields = ['id', 'thread', 'user', 'created_at', 'like_count']
+        # 'thread'와 'user'는 생성 시 view에서 값을 받아와야 하므로 read_only_fields에서 제거합니다.
+        read_only_fields = ['id', 'created_at', 'like_count']
 
     def get_like_count(self, obj):
         return obj.likes.count()
-    
+
 
 
 class OpenEndingSerializer(serializers.ModelSerializer):

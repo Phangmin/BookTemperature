@@ -14,7 +14,7 @@ def generate_image_with_openai(thread_title, thread_content, book_title, book_au
         {book_author}의 책 {book_title}을 읽고 쓴 독서 다이어리의 감정을 분석해 키워드 5개를 추출하시오.
         키워드 추출이 완료됐다면 키워드를 기반으로 이미지 생성 AI에 제공할 프롬프트를 작성하시오.
         해당 프롬프트를 통해 해당 독서 감상문 페이지의 썸네일 이미지를 생성 예정.
-        생성할 최종 이미지는 귀엽고 아기자기한 형태로 감상문에 나타난 감정을 잘 표현해야 함. 
+        생성할 최종 이미지는 세련된 형태로 감상문에 나타난 감정을 잘 표현해야 함.
 
         <독서 다이어리>
             <제목>{thread_title}</제목>
@@ -25,7 +25,7 @@ def generate_image_with_openai(thread_title, thread_content, book_title, book_au
             불안, 격정, 찬란함, 노스텔지아, 희망이 담긴 "cute abstract 3D character 스타일의 그림
         </답변 예시>
 
-        답변 : 
+        답변 :
         """
     )
     client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -39,7 +39,7 @@ def generate_image_with_openai(thread_title, thread_content, book_title, book_au
         temperature=0.5
     )
     keyword_extractor_response = keyword_extractor_response.choices[0].message.content
-    
+
     img_generator_prompt = keyword_extractor_response + " 어떠한 텍스트, 글자, 숫자, 심볼도 포함하지 않을 것"
     print(img_generator_prompt)
 
@@ -52,7 +52,7 @@ def generate_image_with_openai(thread_title, thread_content, book_title, book_au
     )
 
     image_url = response.data[0].url
-    
+
     response_img = requests.get(image_url)
     if response_img.status_code == 200:
         output_dir = Path(settings.MEDIA_ROOT) / "thread_cover_img"
